@@ -40,8 +40,8 @@ Distributed as-is; no warranty is given.
 class DysonSW 
 {
 	public:
-		DysonSW();
-		uint8_t begin(uint8_t Orientation_ = 0); //By default use upward facing 
+		DysonSW(uint8_t Orientation_ = 0); //By default use upward facing 
+		uint8_t begin(); 
 		uint8_t InitAccel();
 		float GetG(uint8_t Axis);
 		float GetAngle(uint8_t Axis);

@@ -18,25 +18,26 @@ Distributed as-is; no warranty is given.
 #include "math.h"
 #include "DysonSW.h"
 
-DysonSW::DysonSW() 
+DysonSW::DysonSW(uint8_t Orientation_) 
 {
+  Orientation = Orientation_; //Copy value to global
+  if(Orientation == DOWN) {
+    Accel_ADR = 0x53; //Alternate accelerometer address
+    ADR = 0x41; //Alternate software address
+  }
 
+  else {
+    Accel_ADR = 0x1D; //Default accelerometer address
+    ADR = 0x40; //Default software address
+  }
 }
 
-uint8_t DysonSW::begin(uint8_t Orientation_) 
+uint8_t DysonSW::begin() 
 {
 	Wire.begin();
-	Serial.begin(38400); //DEBUG!
-	Orientation = Orientation_; //Copy value to global
-	if(Orientation == DOWN) {
-		Accel_ADR = 0x53; //Alternate accelerometer address
-		ADR = 0x41; //Alternate software address
-	}
+  InitAccel();
+	// Serial.begin(38400); //DEBUG!
 
-	else {
-		Accel_ADR = 0x1D; //Default accelerometer address
-		ADR = 0x40; //Default software address
-	}
 }
 
 uint8_t DysonSW::InitAccel()  //Add variable address ability??
@@ -150,15 +151,15 @@ float DysonSW::TempConvert(float V, float Vcc, float R, float A, float B, float 
 String DysonSW::GetString()
 {
 	String Data = "";
-	Data = String(GetAngle(3)) + "," + String(GetAngle(4)) + "," + String(GetUVA()) + "," + String(GetUVB()) + "," + String(GetWhite()) + "," + String(GetLux()) + "," + String(GetIR_Short()) + "," + String(GetIR_Mid()) + "," + String(GetTemp());
+	Data = String(GetAngle(3)) + "," + String(GetAngle(4)) + "," + String(GetUVA()) + "," + String(GetUVB()) + "," + String(GetWhite()) + "," + String(GetLux()) + "," + String(GetIR_Short()) + "," + String(GetIR_Mid()) + "," + String(GetTemp()) + ",";
 	return Data;
 }
 
 String DysonSW::GetHeader()
 {
 	String Header = "";
-	if(Orientation == UP) Header = "Roll_u [deg], Pitch_u [deg], UVA_u, UVB_u, White_u, Visable_u [lx], IR_Short_u, IR_Mid_u, Temp_Pyro_u [C]";
-	if(Orientation == DOWN) Header = "Roll_d [deg], Pitch_d [deg], UVA_d, UVB_d, White_d, Visable_d [lx], IR_Short_d, IR_Mid_d, Temp_Pyro_d [C]";
+	if(Orientation == UP) Header = "R_u [deg], P_u [deg], UVA_u, UVB_u, White_u, Vis_u [lx], IR_S_u, IR_M_u, PyroT_u [C], ";
+	if(Orientation == DOWN) Header = "R_d [deg], P_d [deg], UVA_d, UVB_d, White_d, Vis_d [lx], IR_S_d, IR_M_d, PyroT_d [C], ";
 	return Header;
 }
 
