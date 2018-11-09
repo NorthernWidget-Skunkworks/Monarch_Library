@@ -52,7 +52,7 @@ float DysonSW::GetG(uint8_t Axis)
 {
   WriteByte(Accel_ADR, 0x2D, 0x08); //Turn on accelerometer
   // WriteByte(Accel_ADR, XAXIS);
-  // delay(100);
+  delay(100); //DEBUG!
   Wire.beginTransmission(Accel_ADR);
   Wire.write(XAXIS + 2*Axis);
   Wire.endTransmission();
@@ -90,7 +90,7 @@ float DysonSW::GetAngle(uint8_t Axis)
       Val = atan(ValY/(sqrt(pow(ValX, 2) + pow(ValZ, 2))))*(180.0/3.14); //Return roll angle
       break;
   }
-
+  if(ValX == ValY && ValX == ValZ) Val = -9999; //Return error value is all vals are the same (1 in 6.87x10^10 likelyhood of occouring without error)
   return Val; 
 }
 
