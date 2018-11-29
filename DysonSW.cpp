@@ -141,8 +141,8 @@ float DysonSW::GetTemp()
 
 float DysonSW::TempConvert(float V, float Vcc, float R, float A, float B, float C, float D, float R25)
 {
-  // float Rt = (Vcc/V)*R - R;  //Use if thermistor is on TOP side of voltage divider
-  float Rt = -R/(1 - (Vcc/V)); //Use if thermistor is on BOTTOM side of voltage divider  
+  float Rt = (Vcc/V)*R - R;  //Use if thermistor is on TOP side of voltage divider
+  // float Rt = -R/(1 - (Vcc/V)); //Use if thermistor is on BOTTOM side of voltage divider  
   float LogRt = log(Rt/R25);
   float T = 1.0/(A + B*LogRt + C*pow(LogRt, 2.0) + D*pow(LogRt, 3.0));
   return T;
