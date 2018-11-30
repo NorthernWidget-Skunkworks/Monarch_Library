@@ -64,9 +64,11 @@ class DysonSW
 		const float C = 1.019153E-05;
 		const float D = 9.093712E-07;
 
+		const unsigned long GlobalTimeout = 4000; //Wait up to 3 seconds for incoming data
 		uint8_t ADR = 0x40; //Default address
 		uint8_t Accel_ADR = 0x1D; //Default address
 		uint8_t Orientation = 0; //Global orientation value 
+		bool NewData(); 
 		float TempConvert(float V, float Vcc, float R, float A, float B, float C, float D, float R25);
 		void PrintAllRegs();
 		uint8_t WriteByte(uint8_t Adr, uint8_t Pos, uint8_t Val);

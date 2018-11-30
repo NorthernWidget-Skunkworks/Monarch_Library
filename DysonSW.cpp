@@ -36,6 +36,7 @@ uint8_t DysonSW::begin()
 {
 	Wire.begin();
   InitAccel();
+  WriteByte(ADR, 0x00, 0x00);  //Set control register to make update rate every second
 	// Serial.begin(38400); //DEBUG!
 
 }
@@ -45,26 +46,34 @@ uint8_t DysonSW::InitAccel()  //Add variable address ability??
   WriteByte(Accel_ADR, 0x2D, 0x08); //Turn on accelerometer
   WriteByte(Accel_ADR, 0x31, 0x08); //
   WriteByte(Accel_ADR, 0x38, 0x00); //Bypass FIFO
-  WriteByte(Accel_ADR, 0x2C, 0x0A); //Setup rate
+  // WriteByte(Accel_ADR, 0x2C, 0x0A); //Setup rate
+  WriteByte(Accel_ADR, 0x2C, 0x0F); //Setup rate, high speed
 }
 
 float DysonSW::GetG(uint8_t Axis) 
 {
   WriteByte(Accel_ADR, 0x2D, 0x08); //Turn on accelerometer
+  float g = 0;
+  uint8_t NumPoints = 200; //Number of samples to average 
+
   // WriteByte(Accel_ADR, XAXIS);
   delay(100); //DEBUG!
-  Wire.beginTransmission(Accel_ADR);
-  Wire.write(XAXIS + 2*Axis);
-  Wire.endTransmission();
-  Wire.beginTransmission(Accel_ADR);
-  Wire.requestFrom(Accel_ADR, 2);
-  int LSB = Wire.read();
-  int MSB = Wire.read();
-  Wire.endTransmission();
-  // return ReadWord(Accel_ADR, XAXIS); 
-  // Serial.print(MSB, HEX); Serial.println(LSB, HEX); //DEBUG!
-  float g = ((MSB << 8) | LSB)*(0.0039); 
-  return g; 
+  for(int i = 0; i < NumPoints; i++) { //Average acceleration values over many points
+    Wire.beginTransmission(Accel_ADR);
+    Wire.write(XAXIS + 2*Axis);
+    Wire.endTransmission();
+    Wire.beginTransmission(Accel_ADR);
+    Wire.requestFrom(Accel_ADR, 2);
+    int LSB = Wire.read();
+    int MSB = Wire.read();
+    Wire.endTransmission();
+    // return ReadWord(Accel_ADR, XAXIS); 
+    // Serial.print(MSB, HEX); Serial.println(LSB, HEX); //DEBUG!
+    float g_temp = ((MSB << 8) | LSB)*(0.0039); 
+    g = g + g_temp; //Sum all points
+    delayMicroseconds(500); //Wait for new value
+  }
+  return g/NumPoints; //Averge final result
 }
 
 float DysonSW::GetAngle(uint8_t Axis)
@@ -148,10 +157,23 @@ float DysonSW::TempConvert(float V, float Vcc, float R, float A, float B, float 
   return T;
 }
 
+bool DysonSW::NewData()  //Test for new data from device
+{
+  uint8_t Ctrl = ReadByte(ADR, 0x00); //Read control byte
+  return (Ctrl >> 7); //Return bit 7, if bit is 1, new data is ready
+}
+
 String DysonSW::GetString()
 {
 	String Data = "";
-	Data = String(GetAngle(3)) + "," + String(GetAngle(4)) + "," + String(GetUVA()) + "," + String(GetUVB()) + "," + String(GetWhite()) + "," + String(GetLux()) + "," + String(GetIR_Short()) + "," + String(GetIR_Mid()) + "," + String(GetTemp()) + ",";
+  bool DataFlag = 0; //Flag for storing result of new data test
+  unsigned long Timeout = millis() % GlobalTimeout;
+  while(!DataFlag && (millis() % GlobalTimeout) - Timeout < GlobalTimeout) { //Wait while there is not new data, and timeout has not occoured
+    DataFlag = NewData();
+  }
+  //If timeout occours, return error condition, otherwise return conventional values
+  if(!DataFlag) Data = "-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,";
+	else Data = String(GetAngle(3)) + "," + String(GetAngle(4)) + "," + String(GetUVA()) + "," + String(GetUVB()) + "," + String(GetWhite()) + "," + String(GetLux()) + "," + String(GetIR_Short()) + "," + String(GetIR_Mid()) + "," + String(GetTemp()) + ",";
 	return Data;
 }
 
