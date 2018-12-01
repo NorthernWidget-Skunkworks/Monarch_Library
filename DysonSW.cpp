@@ -167,8 +167,8 @@ String DysonSW::GetString()
 {
 	String Data = "";
   bool DataFlag = 0; //Flag for storing result of new data test
-  unsigned long Timeout = millis() % GlobalTimeout;
-  while(!DataFlag && (millis() % GlobalTimeout) - Timeout < GlobalTimeout) { //Wait while there is not new data, and timeout has not occoured
+  unsigned long Timeout = millis();
+  while(!DataFlag && (millis() - Timeout) < GlobalTimeout) { //Wait while there is not new data, and timeout has not occoured
     DataFlag = NewData();
   }
   //If timeout occours, return error condition, otherwise return conventional values
