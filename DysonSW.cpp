@@ -132,14 +132,14 @@ float DysonSW::GetLux()
   return float(ReadWord(ADR, ALS_ADR))*float(ReadWord(ADR, LUXMUL_ADR))*LuxRes;  //Multiply lux value by set gain from LuxMul
 }
 
-float DysonSW::GetIR_Short()
+float DysonSW::GetIR_Short()  //Return mV of shortwave IR output
 {
-  return float(ReadWord(ADR, IR_SHORT_ADR))*(1.25e-4);
+  return float(ReadWord(ADR, IR_SHORT_ADR))*(0.125);
 }
 
-float DysonSW::GetIR_Mid()
+float DysonSW::GetIR_Mid()  //Return mV of midwave IR output
 {
-  return float(ReadWord(ADR, IR_MID_ADR))*(1.25e-4);
+  return float(ReadWord(ADR, IR_MID_ADR))*(0.125);
 }
 
 float DysonSW::GetTemp()
@@ -180,8 +180,8 @@ String DysonSW::GetString()
 String DysonSW::GetHeader()
 {
 	String Header = "";
-	if(Orientation == UP) Header = "R_u [deg], P_u [deg], UVA_u, UVB_u, White_u, Vis_u [lx], IR_S_u, IR_M_u, PyroT_u [C], ";
-	if(Orientation == DOWN) Header = "R_d [deg], P_d [deg], UVA_d, UVB_d, White_d, Vis_d [lx], IR_S_d, IR_M_d, PyroT_d [C], ";
+	if(Orientation == UP) Header = "R_u [deg], P_u [deg], UVA_u, UVB_u, White_u, Vis_u [lx], IR_S_u [mV], IR_M_u [mV], PyroT_u [C], ";
+	if(Orientation == DOWN) Header = "R_d [deg], P_d [deg], UVA_d, UVB_d, White_d, Vis_d [lx], IR_S_d [mV], IR_M_d [mV], PyroT_d [C], ";
 	return Header;
 }
 
