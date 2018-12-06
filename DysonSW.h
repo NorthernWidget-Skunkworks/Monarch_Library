@@ -64,7 +64,7 @@ class DysonSW
 		const float C = 1.019153E-05;
 		const float D = 9.093712E-07;
 
-		const unsigned long GlobalTimeout = 8000; //Wait up to 3 seconds for incoming data
+		const unsigned long GlobalTimeout = 3000; //Wait up to 3 seconds for incoming data
 		uint8_t ADR = 0x40; //Default address
 		uint8_t Accel_ADR = 0x1D; //Default address
 		uint8_t Orientation = 0; //Global orientation value 

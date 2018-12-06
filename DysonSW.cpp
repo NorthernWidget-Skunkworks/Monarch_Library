@@ -160,6 +160,7 @@ float DysonSW::TempConvert(float V, float Vcc, float R, float A, float B, float 
 bool DysonSW::NewData()  //Test for new data from device
 {
   uint8_t Ctrl = ReadByte(ADR, 0x00); //Read control byte
+  // Serial.println(Ctrl, HEX); //DEBUG!
   return (Ctrl >> 7); //Return bit 7, if bit is 1, new data is ready
 }
 
@@ -167,13 +168,16 @@ String DysonSW::GetString()
 {
 	String Data = "";
   bool DataFlag = 0; //Flag for storing result of new data test
+  String Val1 = String(GetAngle(3));
+  String Val2 = String(GetAngle(4));  //These values are heavily oversampled, get them during wait time while Dyson "boots up"
   unsigned long Timeout = millis();
   while(!DataFlag && (millis() - Timeout) < GlobalTimeout) { //Wait while there is not new data, and timeout has not occoured
     DataFlag = NewData();
+    // delay(100);  //DEBUG!
   }
   //If timeout occours, return error condition, otherwise return conventional values
   if(!DataFlag) Data = "-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,";
-	else Data = String(GetAngle(3)) + "," + String(GetAngle(4)) + "," + String(GetUVA()) + "," + String(GetUVB()) + "," + String(GetWhite()) + "," + String(GetLux()) + "," + String(GetIR_Short()) + "," + String(GetIR_Mid()) + "," + String(GetTemp()) + ",";
+	else Data = Val1 + "," + Val2 + "," + String(GetUVA()) + "," + String(GetUVB()) + "," + String(GetWhite()) + "," + String(GetLux()) + "," + String(GetIR_Short()) + "," + String(GetIR_Mid()) + "," + String(GetTemp()) + ",";
 	return Data;
 }
 
