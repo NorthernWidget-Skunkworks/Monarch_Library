@@ -164,20 +164,45 @@ bool DysonSW::NewData()  //Test for new data from device
   return (Ctrl >> 7); //Return bit 7, if bit is 1, new data is ready
 }
 
+int DysonSW::GetStatus()  
+{
+  //Bit 0 global status (Set if whole system fails)
+  //Bit 1 Pyro Status
+  //Bit 2 Accel Status
+  uint8_t StatusMain = 0; //Main pyro status
+  uint8_t StatusAccel = 0; //Accelerometer status
+
+  Wire.beginTransmission(ADR);
+  Wire.write(0x00);
+  if(Wire.endTransmission() != 0) StatusMain = 1;
+
+  Wire.beginTransmission(Accel_ADR);
+  Wire.write(0x00);
+  if(Wire.endTransmission() != 0) StatusAccel = 1;
+
+  return (StatusMain << 1) | (StatusAccel << 2) | (StatusMain & StatusAccel);
+}
+
 String DysonSW::GetString()
 {
 	String Data = "";
   bool DataFlag = 0; //Flag for storing result of new data test
-  String Val1 = String(GetAngle(3));
-  String Val2 = String(GetAngle(4));  //These values are heavily oversampled, get them during wait time while Dyson "boots up"
-  unsigned long Timeout = millis();
-  while(!DataFlag && (millis() - Timeout) < GlobalTimeout) { //Wait while there is not new data, and timeout has not occoured
-    DataFlag = NewData();
-    // delay(100);  //DEBUG!
+
+  if((GetStatus() & 0x01) == 0) {  //If one of the systems is operational, try to get data
+    String Val1 = String(GetAngle(3));
+    String Val2 = String(GetAngle(4));  //These values are heavily oversampled, get them during wait time while Dyson "boots up"
+    unsigned long Timeout = millis();
+    while(!DataFlag && (millis() - Timeout) < GlobalTimeout) { //Wait while there is not new data, and timeout has not occoured
+      DataFlag = NewData();
+      // delay(100);  //DEBUG!
+    }
+    //If timeout occours, return error condition, otherwise return conventional values
+    if(!DataFlag) Data = "-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,";
+    else Data = Val1 + "," + Val2 + "," + String(GetUVA()) + "," + String(GetUVB()) + "," + String(GetWhite()) + "," + String(GetLux()) + "," + String(GetIR_Short()) + "," + String(GetIR_Mid()) + "," + String(GetTemp()) + ",";
   }
-  //If timeout occours, return error condition, otherwise return conventional values
-  if(!DataFlag) Data = "-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,";
-	else Data = Val1 + "," + Val2 + "," + String(GetUVA()) + "," + String(GetUVB()) + "," + String(GetWhite()) + "," + String(GetLux()) + "," + String(GetIR_Short()) + "," + String(GetIR_Mid()) + "," + String(GetTemp()) + ",";
+
+  else Data = "-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,";  //If all systems have failed, immediately return failed values
+  
 	return Data;
 }
 
@@ -217,10 +242,12 @@ uint8_t DysonSW::ReadByte(uint8_t Adr, uint8_t Pos)
 {
   Wire.beginTransmission(Adr);
   Wire.write(Pos);  //Read from desired position
-  Wire.endTransmission(true); 
+  uint8_t Status = Wire.endTransmission(true); 
   Wire.requestFrom(Adr, 1); //Read a single byte
   // while(Wire.available() < 1); //Wait for byte to be read in
-  return Wire.read(); //Read the desired value back
+  if(Status == 0) return Wire.read(); //Read the desired value back
+  else return 0x00; //Return 0 if there is an I2C error
+  
 }
 
 unsigned int DysonSW::ReadWord(uint8_t Adr, uint8_t Pos)

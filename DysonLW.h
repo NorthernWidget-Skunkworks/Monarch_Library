@@ -42,6 +42,7 @@ class DysonLW
 		float GetThermo();
 		float GetThermoC(uint8_t Accuracy = 0); //Low accuracy by default 
 		float GetTemp();
+		int GetStatus();
 		String GetHeader();
 		String GetString();
 
@@ -51,6 +52,7 @@ class DysonLW
 		// const float B = 0.0003074038;
 		// const float C = 1.019153E-05;
 		// const float D = 9.093712E-07;
+		const unsigned long GlobalTimeout = 100; //Wait up to 100ms seconds for incoming data
 		const float Beta = 3960; //Beta value for thermistor, MAKE NOT FLOAT??
 
 		float TempConvert(float V, float Vcc, float R, float A, float B, float C, float D, float R25);

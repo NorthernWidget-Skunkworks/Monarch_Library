@@ -53,6 +53,7 @@ class DysonSW
 		float GetIR_Short();
 		float GetIR_Mid();
 		float GetTemp();
+		int GetStatus();
 		String GetString();
 		String GetHeader();
 

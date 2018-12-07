@@ -85,6 +85,13 @@ float DysonLW::TempConvert(float V, float Vcc, float R, float Beta, float R25)
  
 //ADD referance compensation!  
 
+int DysonLW::GetStatus() //Returns connection/health status of device 
+{
+  Wire.beginTransmission(ADC_ADR);
+  Wire.write(0x00);
+  return Wire.endTransmission(); //For simple I2C device can just return I2C connection status 
+}
+
 String DysonLW::GetHeader()
 {
   return "IR_Long [mV], IR_Long [C], PyrgT [C], ";
@@ -92,16 +99,22 @@ String DysonLW::GetHeader()
 
 String DysonLW::GetString()
 {
-  return String(GetThermo()) + "," + String(GetThermoC()) + "," + String(GetTemp()) + ",";  //ADD STRING VALS!!!
+  if(GetStatus() == 0) return String(GetThermo()) + "," + String(GetThermoC()) + "," + String(GetTemp()) + ",";  //ADD STRING VALS!!!
+  else return "-9999,-9999,-9999,"; //If status is bad, just return failure condition
+  
 }
 
 unsigned int DysonLW::GetADC(unsigned int Num)
 {
   unsigned int ADC_Config = ADC_CONF_MASK | (Num << 12); //Use to select which ADC to get data from
-  WriteWord_LE(ADC_ADR, ADC_CONF, ADC_Config); //Setup registers
+  uint8_t Status = WriteWord_LE(ADC_ADR, ADC_CONF, ADC_Config); //Setup registers
   // WriteWord_LE(ADC_ADR, ADC_CONF, ADC1); //Setup registers //DEBUG!
-  delay(300);  //Wait for next sample to be read
-  return ReadWord_LE(ADC_ADR, ADC_CONV); //Read from register
+  if(Status == 0) { //If write was sucessful read from device
+    delay(300);  //Wait for next sample to be read
+    return ReadWord_LE(ADC_ADR, ADC_CONV); //Read from register
+  }
+  else return 0x0000; //Return 0  on failure of connection to device 
+
 }
 
 uint8_t DysonLW::WriteWord_LE(uint8_t Adr, uint8_t Command, unsigned int Data)  //Writes value to 16 bit register
@@ -118,7 +131,8 @@ int DysonLW::ReadWord_LE(uint8_t Adr, uint8_t Command)  //Send command value, re
 {
   bool Error = SendCommand(Adr, Command);
   Wire.requestFrom(Adr, 2);
-  while(Wire.available() < 2); //Wait for incoming data
+  unsigned long Timeout = millis();
+  while(Wire.available() < 2 && (millis() - Timeout < GlobalTimeout)); //Wait for incoming data
   uint8_t ByteHigh = Wire.read();  //Read in high and low bytes (big endian)
   uint8_t ByteLow = Wire.read();
   // if(Error == true) return ((ByteHigh << 8) | ByteLow); //If read succeeded, return concatonated value
