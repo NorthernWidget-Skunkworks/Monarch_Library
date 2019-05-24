@@ -36,7 +36,7 @@ uint8_t DysonSW::begin()
 {
 	Wire.begin();
   InitAccel();
-  WriteByte(ADR, 0x00, 0x00);  //Set control register to make update rate every second
+  // WriteByte(ADR, 0x00, 0x00);  //Set control register to make update rate every second
 	// Serial.begin(38400); //DEBUG!
 
 }
@@ -54,10 +54,10 @@ float DysonSW::GetG(uint8_t Axis)
 {
   WriteByte(Accel_ADR, 0x2D, 0x08); //Turn on accelerometer
   float g = 0;
-  uint8_t NumPoints = 200; //Number of samples to average 
+  uint8_t NumPoints = 5; //Number of samples to average 
 
   // WriteByte(Accel_ADR, XAXIS);
-  delay(100); //DEBUG!
+  delay(5); //DEBUG!
   for(int i = 0; i < NumPoints; i++) { //Average acceleration values over many points
     Wire.beginTransmission(Accel_ADR);
     Wire.write(XAXIS + 2*Axis);
@@ -129,6 +129,7 @@ unsigned int DysonSW::GetWhite()
 
 float DysonSW::GetLux()
 {
+  // Serial.println(GetALS()); //DEBUG@
   return float(ReadWord(ADR, ALS_ADR))*float(ReadWord(ADR, LUXMUL_ADR))*LuxRes;  //Multiply lux value by set gain from LuxMul
 }
 
@@ -159,9 +160,11 @@ float DysonSW::TempConvert(float V, float Vcc, float R, float A, float B, float 
 
 bool DysonSW::NewData()  //Test for new data from device
 {
+  // Serial.println("BANG!"); //DEBUG!
+  // uint8_t Ctrl = 0x00; //DEBUG!
   uint8_t Ctrl = ReadByte(ADR, 0x00); //Read control byte
   // Serial.println(Ctrl, HEX); //DEBUG!
-  return (Ctrl >> 7); //Return bit 7, if bit is 1, new data is ready
+  return bool((Ctrl >> 7)); //Return bit 7, if bit is 1, new data is ready
 }
 
 int DysonSW::GetStatus()  
@@ -187,20 +190,26 @@ String DysonSW::GetString()
 {
 	String Data = "";
   bool DataFlag = 0; //Flag for storing result of new data test
-
+  // Serial.println("S"); //DEBUG!
   if((GetStatus() & 0x01) == 0) {  //If one of the systems is operational, try to get data
     String Val1 = String(GetAngle(3));
     String Val2 = String(GetAngle(4));  //These values are heavily oversampled, get them during wait time while Dyson "boots up"
+    //DEBUG!
     unsigned long Timeout = millis();
     while(!DataFlag && (millis() - Timeout) < GlobalTimeout) { //Wait while there is not new data, and timeout has not occoured
       DataFlag = NewData();
-      // delay(100);  //DEBUG!
+      delay(10);
+      // // delay(100);  //DEBUG!
+      // delay(100); //DEBUG!
+      // Serial.println(millis()); //DEBUG!
     }
     //If timeout occours, return error condition, otherwise return conventional values
-    if(!DataFlag) Data = "-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,";
+    if(!DataFlag) Data = "x"; //DEBUG!
+    // if(!DataFlag) Data = "x"; //DEBUG!
     else Data = Val1 + "," + Val2 + "," + String(GetUVA()) + "," + String(GetUVB()) + "," + String(GetWhite()) + "," + String(GetLux()) + "," + String(GetIR_Short()) + "," + String(GetIR_Mid()) + "," + String(GetTemp()) + ",";
   }
 
+  // else Data = "y"; //DEBUG!
   else Data = "-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,-9999,";  //If all systems have failed, immediately return failed values
   
 	return Data;
@@ -211,17 +220,19 @@ String DysonSW::GetHeader()
 	String Header = "";
 	if(Orientation == UP) Header = "R_u [deg], P_u [deg], UVA_u, UVB_u, White_u, Vis_u [lx], IR_S_u [mV], IR_M_u [mV], PyroT_u [C], ";
 	if(Orientation == DOWN) Header = "R_d [deg], P_d [deg], UVA_d, UVB_d, White_d, Vis_d [lx], IR_S_d [mV], IR_M_d [mV], PyroT_d [C], ";
+  // if(Orientation == UP) Header = "Q"; //DEBUG!
+  // if(Orientation == DOWN) Header = "P"; //DEBUG!
 	return Header;
 }
 
-void DysonSW::PrintAllRegs() 
-{
-  for(int i = 0; i < 0x1A; i++) {
-    Serial.print("Reg"); Serial.print(i, HEX); Serial.print(":\t"); //Print register number
-    Serial.println(ReadByte(ADR, i)); //Print register value
-  }
-  Serial.print("\n\n");
-}
+// void DysonSW::PrintAllRegs() 
+// {
+//   for(int i = 0; i < 0x1A; i++) {
+//     Serial.print("Reg"); Serial.print(i, HEX); Serial.print(":\t"); //Print register number
+//     Serial.println(ReadByte(ADR, i)); //Print register value
+//   }
+//   Serial.print("\n\n");
+// }
 
 uint8_t DysonSW::WriteByte(uint8_t Adr, uint8_t Pos, uint8_t Val)
 {

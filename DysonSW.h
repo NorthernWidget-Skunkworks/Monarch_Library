@@ -71,7 +71,7 @@ class DysonSW
 		uint8_t Orientation = 0; //Global orientation value 
 		bool NewData(); 
 		float TempConvert(float V, float Vcc, float R, float A, float B, float C, float D, float R25);
-		void PrintAllRegs();
+		// void PrintAllRegs();
 		uint8_t WriteByte(uint8_t Adr, uint8_t Pos, uint8_t Val);
 		uint8_t ReadByte(uint8_t Adr, uint8_t Pos);
 		unsigned int ReadWord(uint8_t Adr, uint8_t Pos);
