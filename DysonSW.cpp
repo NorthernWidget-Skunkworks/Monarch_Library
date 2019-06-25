@@ -129,7 +129,6 @@ unsigned int DysonSW::GetWhite()
 
 float DysonSW::GetLux()
 {
-  // Serial.println(GetALS()); //DEBUG@
   return float(ReadWord(ADR, ALS_ADR))*float(ReadWord(ADR, LUXMUL_ADR))*LuxRes;  //Multiply lux value by set gain from LuxMul
 }
 
