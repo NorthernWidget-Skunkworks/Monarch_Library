@@ -37,10 +37,10 @@ Two modules can be stacked on the same I2C bus using the orientation flag — on
 ## Basic usage
 
 ```cpp
-#include <LibelleSW.h>
+#include <Libelle.h>
 
-LibelleSW pyroUp(UP);    // upward-facing module
-LibelleSW pyroDown(DOWN); // downward-facing module
+Libelle pyroUp(UP);    // upward-facing module
+Libelle pyroDown(DOWN); // downward-facing module
 
 void setup() {
     Serial.begin(38400);

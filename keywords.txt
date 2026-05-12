@@ -1,0 +1,29 @@
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+Libelle	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin	KEYWORD2
+getHeader	KEYWORD2
+getString	KEYWORD2
+getUVA	KEYWORD2
+getUVB	KEYWORD2
+getALS	KEYWORD2
+getWhite	KEYWORD2
+getLux	KEYWORD2
+getIR_Short	KEYWORD2
+getIR_Mid	KEYWORD2
+getTemp	KEYWORD2
+getAngle	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+UP	LITERAL1
+DOWN	LITERAL1
