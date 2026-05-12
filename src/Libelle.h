@@ -23,26 +23,12 @@ Distributed as-is; no warranty is given.
 #include "Wire.h"
 #include "math.h"
 
-#define UP 0
-#define DOWN 1
-
-#define UVA_ADR 0x02
-#define UVB_ADR 0x06
-#define ALS_ADR 0x0B
-#define WHITE_ADR 0x0D
-#define LUXMUL_ADR 0x10
-#define IR_MID_ADR 0x13
-#define IR_SHORT_ADR 0x15
-#define THERM_ADR 0x17
-
-#define XAXIS 0x32
-#define YAXIS 0x34
-#define ZAXIS 0x36
+enum Orientation { UP = 0, DOWN = 1 };
 
 class Libelle
 {
 	public:
-		Libelle(uint8_t Orientation_ = 0);
+		Libelle(Orientation orientation = UP);
 		bool begin();
 		float getRoll();
 		float getPitch();
@@ -67,7 +53,7 @@ class Libelle
 
 		uint8_t ADR = 0x40;
 		uint8_t Accel_ADR = 0x1D;
-		uint8_t Orientation = 0;
+		Orientation _orientation = UP;
 		bool initAccel();
 		float getG(uint8_t Axis);
 		float TempConvert(float V, float Vcc, float R, float A, float B, float C, float D, float R25);

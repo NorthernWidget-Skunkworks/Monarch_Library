@@ -20,10 +20,25 @@ Distributed as-is; no warranty is given.
 #include "math.h"
 #include "Libelle.h"
 
-Libelle::Libelle(uint8_t Orientation_)
+// ATtiny841 bridge register addresses
+static constexpr uint8_t UVA_ADR      = 0x02;
+static constexpr uint8_t UVB_ADR      = 0x06;
+static constexpr uint8_t ALS_ADR      = 0x0B;
+static constexpr uint8_t WHITE_ADR    = 0x0D;
+static constexpr uint8_t LUXMUL_ADR   = 0x10;
+static constexpr uint8_t IR_MID_ADR   = 0x13;
+static constexpr uint8_t IR_SHORT_ADR = 0x15;
+static constexpr uint8_t THERM_ADR    = 0x17;
+
+// ADXL343 accelerometer data register addresses
+static constexpr uint8_t XAXIS = 0x32;
+static constexpr uint8_t YAXIS = 0x34;
+static constexpr uint8_t ZAXIS = 0x36;
+
+Libelle::Libelle(Orientation orientation)
 {
-  Orientation = Orientation_;
-  if(Orientation == DOWN) {
+  _orientation = orientation;
+  if(_orientation == DOWN) {
     Accel_ADR = 0x53;
     ADR = 0x41;
   }
@@ -140,8 +155,8 @@ float Libelle::TempConvert(float V, float Vcc, float R, float A, float B, float 
 String Libelle::getHeader()
 {
 	String Header = "";
-	if(Orientation == UP)   Header = "R_u [deg],P_u [deg],UVA_u,UVB_u,White_u,Vis_u [lx],IR_S_u,IR_M_u,PyroT_u [C],";
-	if(Orientation == DOWN) Header = "R_d [deg],P_d [deg],UVA_d,UVB_d,White_d,Vis_d [lx],IR_S_d,IR_M_d,PyroT_d [C],";
+	if(_orientation == UP)   Header = "R_u [deg],P_u [deg],UVA_u,UVB_u,White_u,Vis_u [lx],IR_S_u,IR_M_u,PyroT_u [C],";
+	if(_orientation == DOWN) Header = "R_d [deg],P_d [deg],UVA_d,UVB_d,White_d,Vis_d [lx],IR_S_d,IR_M_d,PyroT_d [C],";
 	return Header;
 }
 
