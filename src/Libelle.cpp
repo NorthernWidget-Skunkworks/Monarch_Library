@@ -54,11 +54,9 @@ float Libelle::getG(uint8_t Axis)
   Wire.beginTransmission(Accel_ADR);
   Wire.write(XAXIS + 2*Axis);
   Wire.endTransmission();
-  Wire.beginTransmission(Accel_ADR);
   Wire.requestFrom(Accel_ADR, 2);
   int LSB = Wire.read();
   int MSB = Wire.read();
-  Wire.endTransmission();
   float g = ((MSB << 8) | LSB)*(0.0039);
   return g;
 }
