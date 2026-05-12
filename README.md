@@ -67,11 +67,15 @@ void loop() {
 | `getALS()` | `unsigned int` | Raw ambient light sensor counts |
 | `getWhite()` | `unsigned int` | Raw broadband counts |
 | `getLux()` | `float` | Illuminance (lux) |
-| `getIR_Short()` | `float` | Near-IR short channel voltage (V) |
-| `getIR_Mid()` | `float` | Near-IR mid channel voltage (V) |
+| `getIR_Short()` | `float` | VEMD1060X01 (~700–1100 nm) transimpedance output voltage (V); 47 kΩ feedback resistor, ADS1115 at ±4.096 V FSR |
+| `getIR_Mid()` | `float` | SD003-151-001 (~1000–1700 nm) transimpedance output voltage (V); 1 MΩ feedback resistor, ADS1115 at ±4.096 V FSR |
 | `getTemp()` | `float` | Housing temperature (°C) |
 | `getRoll()` | `float` | Roll angle from accelerometer (degrees); uses all three axes |
 | `getPitch()` | `float` | Pitch angle from accelerometer (degrees); uses all three axes; ADXL343 outputs at 100 Hz — readings taken less than 10 ms apart return the same sample |
+
+### IR channel units and calibration
+
+`getIR_Short()` and `getIR_Mid()` return the raw output voltage of the transimpedance amplifier circuit (photodiode current × feedback resistance), as read by the ADS1115 ADC. Converting to irradiance (W/m²) requires calibration against a reference pyranometer — a fixed conversion factor is not physically valid because the responsivity of each photodiode varies across its spectral range, so the effective sensitivity changes with the spectral composition of the incoming light (e.g., clear sky vs. overcast).
 
 ## Name history
 
