@@ -59,7 +59,7 @@ void loop() {
 
 | Method | Returns | Description |
 |--------|---------|-------------|
-| `begin()` | `uint8_t` | Initialize sensor and I2C bus |
+| `begin()` | `uint8_t` | Initialize sensor and I2C bus; includes 2 ms settling time for accelerometer startup |
 | `getHeader()` | `String` | Comma-separated column names with units |
 | `getString()` | `String` | Comma-separated measurement values |
 | `getUVA()` | `long` | Raw UV-A counts |
@@ -70,7 +70,7 @@ void loop() {
 | `getIR_Short()` | `float` | Near-IR short channel voltage (V) |
 | `getIR_Mid()` | `float` | Near-IR mid channel voltage (V) |
 | `getTemp()` | `float` | Housing temperature (°C) |
-| `getAngle(axis)` | `float` | Tilt angle from accelerometer (degrees) |
+| `getAngle(axis)` | `float` | Tilt angle from accelerometer (degrees); ADXL343 outputs at 100 Hz — readings taken less than 10 ms apart return the same sample |
 
 ## Name history
 

@@ -37,6 +37,7 @@ uint8_t Libelle::begin()
 {
 	Wire.begin();
   initAccel();
+  delay(2); // ADXL343 standby→measurement startup time: 1.4 ms max
 }
 
 uint8_t Libelle::initAccel()
@@ -50,7 +51,6 @@ uint8_t Libelle::initAccel()
 float Libelle::getG(uint8_t Axis)
 {
   WriteByte(Accel_ADR, 0x2D, 0x08);
-  delay(100); //DEBUG!
   Wire.beginTransmission(Accel_ADR);
   Wire.write(XAXIS + 2*Axis);
   Wire.endTransmission();
