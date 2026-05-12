@@ -59,7 +59,7 @@ void loop() {
 
 | Method | Returns | Description |
 |--------|---------|-------------|
-| `begin()` | `uint8_t` | Initialize sensor and I2C bus; includes 2 ms settling time for accelerometer startup |
+| `begin()` | `bool` | Initialize sensor and I2C bus; returns true on success, false if either the sensor bridge or accelerometer is unreachable; includes 2 ms settling time for accelerometer startup |
 | `getHeader()` | `String` | Comma-separated column names with units |
 | `getString()` | `String` | Comma-separated measurement values |
 | `getUVA()` | `long` | Raw UV-A counts |

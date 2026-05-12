@@ -43,7 +43,7 @@ class Libelle
 {
 	public:
 		Libelle(uint8_t Orientation_ = 0);
-		uint8_t begin();
+		bool begin();
 		float getRoll();
 		float getPitch();
 		long getUVA();
@@ -68,11 +68,11 @@ class Libelle
 		uint8_t ADR = 0x40;
 		uint8_t Accel_ADR = 0x1D;
 		uint8_t Orientation = 0;
-		uint8_t initAccel();
+		bool initAccel();
 		float getG(uint8_t Axis);
 		float TempConvert(float V, float Vcc, float R, float A, float B, float C, float D, float R25);
 		void PrintAllRegs();
-		uint8_t WriteByte(uint8_t Adr, uint8_t Pos, uint8_t Val);
+		bool WriteByte(uint8_t Adr, uint8_t Pos, uint8_t Val);
 		uint8_t ReadByte(uint8_t Adr, uint8_t Pos);
 		unsigned int ReadWord(uint8_t Adr, uint8_t Pos);
 };

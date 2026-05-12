@@ -33,19 +33,24 @@ Libelle::Libelle(uint8_t Orientation_)
   }
 }
 
-uint8_t Libelle::begin()
+bool Libelle::begin()
 {
 	Wire.begin();
-  initAccel();
+  Wire.beginTransmission(ADR);
+  bool sensorOk = (Wire.endTransmission() == 0);
+  bool accelOk = initAccel();
   delay(2); // ADXL343 standby→measurement startup time: 1.4 ms max
+  return sensorOk && accelOk;
 }
 
-uint8_t Libelle::initAccel()
+bool Libelle::initAccel()
 {
-  WriteByte(Accel_ADR, 0x2D, 0x08);
-  WriteByte(Accel_ADR, 0x31, 0x08);
-  WriteByte(Accel_ADR, 0x38, 0x00);
-  WriteByte(Accel_ADR, 0x2C, 0x0A);
+  bool ok = true;
+  ok &= WriteByte(Accel_ADR, 0x2D, 0x08);
+  ok &= WriteByte(Accel_ADR, 0x31, 0x08);
+  ok &= WriteByte(Accel_ADR, 0x38, 0x00);
+  ok &= WriteByte(Accel_ADR, 0x2C, 0x0A);
+  return ok;
 }
 
 float Libelle::getG(uint8_t Axis)
@@ -154,12 +159,12 @@ void Libelle::PrintAllRegs()
   Serial.print("\n\n");
 }
 
-uint8_t Libelle::WriteByte(uint8_t Adr, uint8_t Pos, uint8_t Val)
+bool Libelle::WriteByte(uint8_t Adr, uint8_t Pos, uint8_t Val)
 {
   Wire.beginTransmission(Adr);
   Wire.write(Pos);
   Wire.write(Val);
-  Wire.endTransmission();
+  return Wire.endTransmission() == 0;
 }
 
 uint8_t Libelle::ReadByte(uint8_t Adr, uint8_t Pos)
