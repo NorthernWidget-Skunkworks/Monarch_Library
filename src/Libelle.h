@@ -44,7 +44,8 @@ class Libelle
 	public:
 		Libelle(uint8_t Orientation_ = 0);
 		uint8_t begin();
-		float getAngle(uint8_t Axis);
+		float getRoll();
+		float getPitch();
 		long getUVA();
 		long getUVB();
 		unsigned int getALS();

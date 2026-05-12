@@ -19,7 +19,8 @@ getLux	KEYWORD2
 getIR_Short	KEYWORD2
 getIR_Mid	KEYWORD2
 getTemp	KEYWORD2
-getAngle	KEYWORD2
+getRoll	KEYWORD2
+getPitch	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)

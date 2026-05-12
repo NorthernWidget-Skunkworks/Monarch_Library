@@ -61,31 +61,22 @@ float Libelle::getG(uint8_t Axis)
   return g;
 }
 
-float Libelle::getAngle(uint8_t Axis)
+float Libelle::getRoll()
 {
   float ValX = getG(0);
   float ValY = getG(1);
   float ValZ = getG(2);
-  float Val = 0;
-  switch(Axis) {
-    case(0):
-      Val = asin(ValX);
-      break;
-    case(1):
-      Val = asin(ValY);
-      break;
-    case(2):
-      Val = acos(ValZ);
-      break;
-    case(3):
-      Val = atan(ValX/(sqrt(pow(ValY, 2) + pow(ValZ, 2))))*(180.0/3.14);
-      break;
-    case(4):
-      Val = atan(ValY/(sqrt(pow(ValX, 2) + pow(ValZ, 2))))*(180.0/3.14);
-      break;
-  }
-  if(ValX == ValY && ValX == ValZ) Val = -9999;
-  return Val;
+  if(ValX == ValY && ValX == ValZ) return -9999;
+  return atan(ValX / sqrt(pow(ValY, 2) + pow(ValZ, 2))) * (180.0 / M_PI);
+}
+
+float Libelle::getPitch()
+{
+  float ValX = getG(0);
+  float ValY = getG(1);
+  float ValZ = getG(2);
+  if(ValX == ValY && ValX == ValZ) return -9999;
+  return atan(ValY / sqrt(pow(ValX, 2) + pow(ValZ, 2))) * (180.0 / M_PI);
 }
 
 long Libelle::getUVA()
@@ -151,7 +142,7 @@ String Libelle::getHeader()
 
 String Libelle::getString()
 {
-	return String(getAngle(3)) + "," + String(getAngle(4)) + "," + String(getUVA()) + "," + String(getUVB()) + "," + String(getWhite()) + "," + String(getLux()) + "," + String(getIR_Short()) + "," + String(getIR_Mid()) + "," + String(getTemp()) + ",";
+	return String(getRoll()) + "," + String(getPitch()) + "," + String(getUVA()) + "," + String(getUVB()) + "," + String(getWhite()) + "," + String(getLux()) + "," + String(getIR_Short()) + "," + String(getIR_Mid()) + "," + String(getTemp()) + ",";
 }
 
 void Libelle::PrintAllRegs()
