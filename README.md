@@ -81,7 +81,7 @@ void loop() {
 
 This library has been through two prior names. It began as **Dyson** — a reference to Freeman Dyson and the idea of a structure that follows the sun — and was subsequently renamed **Monarch** after the butterfly. *Libelle* is the third and current name, chosen to avoid unintended connotations while staying within the project's tradition of naming instruments after organisms with exceptional sensory capabilities.
 
-The hardware project lives at [NorthernWidget-Skunkworks/Project-Monarch](https://github.com/NorthernWidget-Skunkworks/Project-Monarch).
+The hardware project lives at [NorthernWidget-Skunkworks/Project-Libelle](https://github.com/NorthernWidget-Skunkworks/Project-Libelle).
 
 ## License
 
